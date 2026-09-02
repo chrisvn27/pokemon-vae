@@ -1,0 +1,17 @@
+# Data (downloaded separately, not tracked)
+data/*
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# OS
+.DS_Store
+
+# Model checkpoints (large binaries, keep out of git)
+*.pt
+*.pth
+checkpoints/
