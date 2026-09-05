@@ -1,4 +1,6 @@
 from pathlib import Path
+import pandas as pd
+
 
 data_dir = Path("data/pokemon_images/sprites")
 
@@ -30,3 +32,29 @@ for path in filtered_list:
 
 print(len(records))
 print(records[0])
+
+species_set = set()
+
+for record in records:
+    species_set.add(record["species"])
+
+print(len(species_set))
+# print(species_set)
+
+csv_pat = Path("data/pokemon_images/pokedex.csv")
+df = pd.read_csv(csv_pat)
+print(df.shape)
+print(df.head())
+
+pandas_name_set = set(df["name"])
+print(len(pandas_name_set))
+
+in_csv_not_images = pandas_name_set - species_set
+in_images_not_csv = species_set - pandas_name_set
+print(len(in_csv_not_images))
+print(len(in_images_not_csv))
+print(in_csv_not_images)
+print(in_images_not_csv)
+
+id= df[df["name"] == "Pikachu Phd"]["id"]
+print(id)
