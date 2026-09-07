@@ -1,22 +1,19 @@
 from pathlib import Path
 import pandas as pd
-
+from PIL import Image
 
 data_dir = Path("data/pokemon_images/sprites")
-
 png_files = data_dir.rglob("*.png")
-
 filtered_list=[]
 
 for path in (png_files):
     if path.parts[4] == 'front':
         filtered_list.append(path)
 
-print(len(filtered_list))
-print(filtered_list[0])
+print("Number of images considering only front images of pokemons: ",len(filtered_list))
+print("Sanity check of first image path: ",filtered_list[0])
 
 records = []
-
 for path in filtered_list:
     parts = path.parts[3]
     parts_1 = parts.split('-',1)
@@ -30,31 +27,47 @@ for path in filtered_list:
     }
     records.append(record)
 
-print(len(records))
-print(records[0])
+print("Number of dictionaries for each file with 'path', 'species', 'dex', and 'variant' key",len(records))
+print("First pokemon in the dictionary: ", records[0])
 
 species_set = set()
-
 for record in records:
     species_set.add(record["species"])
 
-print(len(species_set))
-# print(species_set)
+print("Total number of unique species: ", len(species_set))
+
 
 csv_pat = Path("data/pokemon_images/pokedex.csv")
 df = pd.read_csv(csv_pat)
-print(df.shape)
+print("Pokedex.csv shape: ", df.shape)
+print("First 5 rows of pokedex.csv:")
 print(df.head())
 
 pandas_name_set = set(df["name"])
-print(len(pandas_name_set))
+print("Total of species in pokedex.csv: ", len(pandas_name_set))
 
 in_csv_not_images = pandas_name_set - species_set
 in_images_not_csv = species_set - pandas_name_set
-print(len(in_csv_not_images))
-print(len(in_images_not_csv))
-print(in_csv_not_images)
-print(in_images_not_csv)
+print("Species in csv but not in images set: ", len(in_csv_not_images))
+print("Species in images set but not in csv: ", len(in_images_not_csv))
 
-id= df[df["name"] == "Pikachu Phd"]["id"]
-print(id)
+
+image_sizes = set()
+image_modes = set()
+corrupted = []
+
+print("Number of images prior checking mode and size of images: ", len(records))
+
+for record in records:
+    try: 
+        img = Image.open(record["path"])
+        img.load()
+        image_sizes.add(img.size)
+        image_modes.add(img.mode)
+        
+    except Exception as e:
+        corrupted.append((record["path"], str(e)))
+
+print("image sizes: ", image_sizes)
+print("image modes: ", image_modes)
+print("Total of corrupted files: ", len(corrupted))
