@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader, Dataset ,random_split
 from PIL import Image
 import torch
 
+torch.manual_seed(42)
+
 class ImageDataSet(Dataset):
     def __init__(self,records, transform):
         super().__init__()
@@ -20,7 +22,7 @@ class ImageDataSet(Dataset):
         img = self.transform(img)
         return img
 
-records = build_records()
+batch_size = 64
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -28,12 +30,27 @@ transform = transforms.Compose([
 ])
 
 
-dataset_records = ImageDataSet(records,transform)
+def convert_to_dataloader_train_and_test(batch_size = batch_size,transform = transform):
+    records = build_records()
+    dataset_records = ImageDataSet(records,transform)
+    dataset_records_train, dataset_records_test = random_split(dataset_records, [0.9, 0.1])
+    dataloader_train = DataLoader(dataset_records_train, batch_size= batch_size, shuffle= True)
+    dataloader_test = DataLoader(dataset_records_test, batch_size=batch_size)
 
-dataset_records_train, dataset_records_test = random_split(dataset_records, [0.9, 0.1])
-print("Shape of first dataset_records_train: ", dataset_records_train[0].shape)
-print("max and min value of first sample in dataset_records_train: ", dataset_records_train[0].max(), dataset_records_train[0].min())
+    return dataloader_train, dataloader_test
 
-data_loader_train = DataLoader(dataset_records_train, batch_size= 64, shuffle= True)
-data_loader_test = DataLoader(dataset_records_test, batch_size=64)
+
+
+if __name__ == "__main__":
+
+    train_dataloader , test_dataloader = convert_to_dataloader_train_and_test()
+
+    first_sample_check = next(iter(train_dataloader))
+    print("Shape of first dataset_records_train: ", first_sample_check[0].shape)
+    print("max and min value of first sample in dataset_records_train: ", first_sample_check[0].max(), first_sample_check[0].min())
+
+
+
+
+
 
