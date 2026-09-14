@@ -45,9 +45,10 @@ if __name__ == "__main__":
 
     train_dataloader , test_dataloader = convert_to_dataloader_train_and_test()
 
-    first_sample_check = next(iter(train_dataloader))
-    print("Shape of first dataset_records_train: ", first_sample_check[0].shape)
-    print("max and min value of first sample in dataset_records_train: ", first_sample_check[0].max(), first_sample_check[0].min())
+    first_batch_check = next(iter(train_dataloader))
+    print("Number of images per batch: ", {len(first_batch_check)})
+    print("Shape of first dataset_records_train: ", first_batch_check.shape)
+    print("max and min value of first sample in dataset_records_train: ", first_batch_check[0].max(), first_batch_check[0].min())
 
 
 
