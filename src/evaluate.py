@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
-from train import loss_recon, kl_divergence_loss
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
+from train import loss_recon, kl_divergence_loss, device
 
 def evaluate_epoch(model, data_test_or_val):
     """
@@ -17,13 +15,13 @@ def evaluate_epoch(model, data_test_or_val):
         float - average per image-loss (reconstruction + KL) for this epoch
     """
     model.eval()
-    betha = 1
+    beta = 1
     Loss_track = 0
     with torch.no_grad():
         for x in data_test_or_val:
             x = x.to(device)
             mu, log_var, x_recon = model(x)
-            Loss =  loss_recon(x, x_recon) + betha * kl_divergence_loss(mu, log_var)
+            Loss =  loss_recon(x, x_recon) + beta * kl_divergence_loss(mu, log_var)
             Loss_track += Loss.item()/len(x)
 
     return Loss_track/len(data_test_or_val)

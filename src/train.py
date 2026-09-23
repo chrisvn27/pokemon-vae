@@ -34,13 +34,13 @@ def train_epoch(model, optim, data_train, epoch, epochs):
         float - average per-image loss (reconstruction + beta*KL) for this epoch
     """
     model.train()
-    betha = min(1, epoch / int(0.2*epochs))
+    beta = min(1, epoch / max(1, int(0.2*epochs)))
     Loss_track = 0
     for x in data_train:
         x = x.to(device)
         optim.zero_grad()
         mu, log_var, x_recon = model(x)
-        Loss = loss_recon(x_recon, x) + betha*kl_divergence_loss(mu, log_var)
+        Loss = loss_recon(x_recon, x) + beta*kl_divergence_loss(mu, log_var)
         Loss.backward()
         optim.step()
 
