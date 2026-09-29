@@ -18,6 +18,20 @@ def kl_divergence_loss(mu, log_var):
     kl = -0.5*(1 + log_var - mu**2 - torch.exp(log_var)).sum(dim=1)
     return kl.sum(dim=0)
 
+def calculate_weighted_error(x,x_recon):
+    is_white = (x == 1)
+    background_mask = torch.all(is_white, dim=1)
+
+    weight = torch.where(background_mask, 1.0, 5.0)
+    weight = weight.unsqueeze(1)
+
+    squared_error = (x - x_recon) ** 2
+    weighted_error = squared_error*weight
+
+    return weighted_error
+
+
+
 def train_epoch(model, optim, data_train, epoch, epochs):
     """
     Runs one epoch of training: forward pass, combined reconstruction + KL loss
@@ -25,7 +39,7 @@ def train_epoch(model, optim, data_train, epoch, epochs):
     optimizer step, for every batch in data_train.
 
     Args:
-        model: VAE instance
+        model: VAE instancegit 
         optim: optimizer (e.g. torch.optim.Adam) over model's parameters
         data_train: DataLoader yielding batches of images, shape (batch, 3, 96, 96)
         epoch: current epoch number (0-indexed), used to compute the KL annealing weight
@@ -34,13 +48,15 @@ def train_epoch(model, optim, data_train, epoch, epochs):
         float - average per-image loss (reconstruction + beta*KL) for this epoch
     """
     model.train()
-    beta = min(1, epoch / max(1, int(0.2*epochs)))
+    beta = 0 #min(1, epoch / max(1, int(0.2*epochs)))
     Loss_track = 0
     for x in data_train:
         x = x.to(device)
         optim.zero_grad()
         mu, log_var, x_recon = model(x)
-        Loss = loss_recon(x_recon, x) + beta*kl_divergence_loss(mu, log_var)
+        weighted_error = calculate_weighted_error(x, x_recon)
+        recon_loss = weighted_error.sum()
+        Loss = recon_loss + beta*kl_divergence_loss(mu, log_var)
         Loss.backward()
         optim.step()
 
