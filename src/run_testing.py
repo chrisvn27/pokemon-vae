@@ -36,6 +36,36 @@ def generate_images(num_images):
     return   new_images
 
 
+def generate_images_fromdataloader(dataloader):
+    """"
+    Generates new Pokemon sprites by sampling random latent vectors from N(0,1)
+    and decoding them, bypassing the encoder entirely
+
+    Args:
+        num_images: int - number of sprites to generate
+    
+    Returns:
+        new_images: numpy array of shape (num_images, 96, 96, 3), pixel values in [0,1]
+    """
+    model = VAE()
+    model.load_state_dict(torch.load('model_vae_weights.pth'))
+    model.to(device)
+    model.eval()
+
+    with torch.no_grad():
+        data = next(iter(dataloader))
+        data = data.to(device)
+        _, _, new_images = model(data)
+
+    new_images = new_images*std + mean
+    new_images = new_images.permute(0,2,3,1)
+    new_images = new_images.cpu().numpy()
+
+    data = data*std + mean
+    data = data.permute(0,2,3,1)
+    data = data.cpu().numpy()
+    return   new_images, data
+
 def test_model(test_dataloader):
     """
     Loads the saved model checkpoint and computes reconstruction + KL loss
