@@ -10,7 +10,7 @@ import time
 if __name__ == "__main__":
     start_time = time.perf_counter()
 
-    epochs = 50
+    epochs = 250
     model = VAE()
     optim = torch.optim.Adam(model.parameters())
     batch_size = 64
@@ -34,21 +34,20 @@ if __name__ == "__main__":
     loss_test = test_model(test_dataloader)
     print(f"Loss test is: {loss_test:.4f}")
 
-    # images = generate_images(num_images)
+    
 
-    fig, ax = plt.subplots(2,4)
+    fig, ax = plt.subplots(3,4)
 
     gen_img, true_img = generate_images_fromdataloader(test_dataloader)
+    random_img = generate_images(num_images)
 
     for i in range(num_images):
         ax[0,i].imshow(gen_img[i])
         ax[1,i].imshow(true_img[i])
-
+        ax[2, i].imshow(random_img[i])
+    ax[0,0].set_ylabel("Reconstructed")
+    ax[1,0].set_ylabel("Original")
+    ax[2,0].set_ylabel("Random")
     plt.show()
-
-    # for i in range(num_images):
-    #     ax[i//4, i%4].imshow(images[i])
-
-    # plt.show()
 
 
