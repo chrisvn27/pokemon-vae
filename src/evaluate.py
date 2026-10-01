@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from train import loss_recon, kl_divergence_loss, device, calculate_weighted_error
+from train import kl_divergence_loss, device, calculate_weighted_error
 
 def evaluate_epoch(model, data_test_or_val):
     """
@@ -15,7 +15,7 @@ def evaluate_epoch(model, data_test_or_val):
         float - average per image-loss (reconstruction + KL) for this epoch
     """
     model.eval()
-    beta = 0 #1
+    beta = 0.5
     Loss_track = 0
     with torch.no_grad():
         for x in data_test_or_val:
