@@ -23,7 +23,7 @@ making it easy to visually judge whether the model is actually working.
 
 ## Status
 
-✅ Core pipeline complete: data processing, VAE architecture, training with
+Core pipeline complete: data processing, VAE architecture, training with
 KL annealing, masked reconstruction loss, evaluation, and generation. See
 [Results](#results) for an honest account of what worked and what didn't.
 
@@ -125,14 +125,6 @@ the train/validation loss divergence seen in training.
 ![Reconstruction vs. original (train set)](figures/train_results.png)
 *Top: reconstructions of real train-set images. Bottom: the originals. Compare
 sharpness and color accuracy to the test-set reconstructions above.*
-
-### Generation
-
-Sampling random latent vectors from N(0,1) and decoding them directly (no
-input image, no encoder involved) produces incoherent, blob-like output —
-color patches with little to no recognizable Pokémon structure.
-
-![Random generation samples](figures/random_generation.png)
 
 This was isolated and debugged through a series of controlled experiments:
 
